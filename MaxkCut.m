@@ -16,7 +16,7 @@ function [] = MaxkCut(InputType, InputData, e1, k, max_time, MemLog)
 % Optionally, set
 % (i) MemLog = 1 if you want to track memory usage
 % (ii) max_time = max time to run the algorithm (in seconds)
-
+% The output is stored in the 'output_MkC' directory
 
 
 %% Set seed value
@@ -67,20 +67,6 @@ else
 end
 E = CreateEdgeSet(V,C);
 
-
-%%%%Generate the list of edges E = (i,j), i<j
-E = zeros(nnz(C),2);
-cnt = 1;
-for i = 1:V
-    idx = find(C(i,i+1:V));
-    idx = idx+i;      %% adjust index
-    for j = 1:length(idx)
-        E(cnt,:) = [i,idx(j)];
-        cnt = cnt+1;
-    end
-end
-E = E(any(E,2),:);
-
 %% Set input parameters for FW-GS
 disp('Setting parameters');
 alpha = V;
@@ -97,9 +83,9 @@ lambdamaxC = eigs(C,1,'LR');
 %Create matrix of random samples
 disp('Creating initial random samples');
 x = 1:V;
-for i = 1:k*nsamples
+for ii = 1:k*nsamples
     z = randn(V,1);
-    if i == 1
+    if ii == 1
         Z = z;
     else
         Z = [Z z];
@@ -129,13 +115,13 @@ h = zeros(V+1+nedges,1);
 if l >= 0
     h(1) = alpha*u'*C*u;
     h(2:V+1) = alpha*u.^2;
-    for i = 1:nedges
-        h(V+1+i) = alpha*u(E(i,1))*u(E(i,2));
+    for ii = 1:nedges
+        h(V+1+ii) = alpha*u(E(ii,1))*u(E(ii,2));
     end
 end
 
 %Initial constraint violation
-vecMaxPenalty = [];
+%vecMaxPenalty = [];
 
 %% Run the loop until gap is less than epsilon*Tr(C)
 disp('#itr|Duality Gap|Max Constr Viol');
@@ -147,13 +133,13 @@ while ( ((h-v)'*[1;-matrix_entry] > e1*trace(C) ) && toc <= max_time)
     end
     
     %% Generate samples from gradient and update the samples
-    for i = 1:k*nsamples
+    for ii = 1:k*nsamples
         x1 = normrnd(0,1);
         w = u*x1;
         if l >= 0
-            Z(:,i) = sqrt(1-gamma)*Z(:,i) + sqrt(gamma)*w;
+            Z(:,ii) = sqrt(1-gamma)*Z(:,ii) + sqrt(gamma)*w;
         else
-            Z(:,i) = sqrt(1-gamma)*Z(:,i);
+            Z(:,ii) = sqrt(1-gamma)*Z(:,ii);
         end
     end
     
@@ -181,8 +167,8 @@ while ( ((h-v)'*[1;-matrix_entry] > e1*trace(C) ) && toc <= max_time)
     if l >= 0
         h(1) = alpha*u'*C*u;
         h(2:V+1) = alpha*u.^2;
-        for i = 1:nedges
-            h(V+1+i) = alpha*u(E(i,1))*u(E(i,2));
+        for ii = 1:nedges
+            h(V+1+ii) = alpha*u(E(ii,1))*u(E(ii,2));
         end
     end
     
@@ -190,23 +176,22 @@ end
 
 %% Compute feasible solution with best value
 %Generate feasible samples
-Z1 = Z;
 ineq = max(max(-v(V+2:length(v))-(1/(k-1))*ones(nedges,1)),0);
 maxeq = max(v(2:V+1))+ineq;
-for i = 1:k*nsamples
+for ii = 1:k*nsamples
     y = randn;
-    z = Z(:,i)+sqrt(ineq)*y*ones(V,1);
+    z = Z(:,ii)+sqrt(ineq)*y*ones(V,1);
     rndm = randn(V,1);
     w = sqrt(ones(V,1)-((v(2:V+1)+ineq)/maxeq)).*rndm+z/sqrt(maxeq);
-    Z(:,i) = w;
+    Z(:,ii) = w;
 end
 
 assignment = zeros(V,nsamples);
 %Assign nodes to partition
-for j = 1:nsamples
-    for i = 1:V
-        [~, maxindex] = max(Z(i,k*(j-1)+1):k*j);
-        assignment(i,j) = maxindex;
+for ns = 1:nsamples
+    for ii = 1:V
+        [~, maxindex] = max(Z(ii,k*(ns-1)+1:k*ns));
+        assignment(ii,ns) = maxindex;
     end
 end
 
@@ -214,11 +199,11 @@ end
 e = @(k,n)[zeros(k-1,1);1;zeros(n-k,1)];
 BestCut = 0;
 AvgCut = 0;
-for j = 1:nsamples
+for jj = 1:nsamples
     Cut = 0;
-    for i = 1:nedges
-        if assignment(E(i,1),j) ~= assignment(E(i,2),j)
-            Cut = Cut + e(E(i,1),V)'*C*e(E(i,2),V);
+    for ii = 1:nedges
+        if assignment(E(ii,1),jj) ~= assignment(E(ii,2),jj)
+            Cut = Cut + e(E(ii,1),V)'*C*e(E(ii,2),V);
         end
     end
     Cut = -((2*k)/(k-1))*Cut;
