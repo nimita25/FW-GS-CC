@@ -2,6 +2,20 @@ This is a directory containing the code for the generating the results given
 in 'Memory-Efficient Approximation Algorithms for Max-k-Cut and Correlation
 Clustering'.
 
+The directory structure and the files are as follows:
+1. CorClus.m -- Contains implementation of Algorithm 1 from when applied to
+correlation clustering
+2. MaxkCut.m -- Contains implementation of Algorithm 1 from when applied to
+Max-k-Cut
+3. CreateCCGraph_Labels.m -- Generate a graph whose edges have '+', '-' for
+any given input graph
+4. Directory 'Datasets' -- Contains graphs from GSet dataset. Please refer
+to Section 7 of the paper for more details for the dataset
+5. Directory 'CCGraphs' -- Contains modified graphs from GSet such that each
+edge is labelled either '+' or '-'
+6. Directories 'output_CC' and 'output_MkC' -- Contain the output of CorClus.m
+and MaxkCut.m respectively
+
 Please refer to the instructions given in this file to recreate the
 results in Table 1, and Appendices B and C of the paper.
 

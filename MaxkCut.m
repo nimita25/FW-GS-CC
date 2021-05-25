@@ -1,21 +1,26 @@
 function [] = MaxkCut(InputType, InputData, e1, k, max_time, MemLog)
-% MaxkCut(InputType, InputData, e1, max_time, MemLog)
+% Usage: MaxkCut(InputType, InputData, e1, max_time, MemLog)
 % (a) If you want to generate k partitions for a random graph,
 % execute the following:
 % MaxkCut('R', [V,degree], e1, k, max_time, MemLog)
-% where
-% V number of nodes and average degree of each node equal to 'degree'
-%
+% where V is number of nodes and the average degree of each node equals 'degree'
+% Example: MaxkCut('R',[100,4],0.05,3,3600,0);
+% 
 % (b) If you want to generate k partitions for an input graph, first save the
-% '.mat' file in the 'Datasets' directory and then, execute the following:
+% '.mat' file in the 'Datasets' directory located in the same path as 'MaxkCut.m'
+% and then, execute the following:
 % MaxkCut('S', filename, e1, k, max_time, MemLog)
-%
+% Example: filename = 'G1.mat';
+% MaxkCut('S',filename,0.05,3,3600,0);
+% 
 % Set
-% e1 = epsilon, the relative error to generate the solution to SDP
+% e1 = epsilon, the relative error to generate the solution to SDP (for more
+% information about the parameter, please refer to Section 3 in the paper)
 % k = the number of partitions
 % Optionally, set
 % (i) MemLog = 1 if you want to track memory usage
 % (ii) max_time = max time to run the algorithm (in seconds)
+% 
 % The output is stored in the 'output_MkC' directory
 
 

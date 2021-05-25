@@ -1,19 +1,25 @@
 function [] = CorClus(InputType, InputData, e1, max_time, MemLog)
-% CorClus(InputType, InputData, e1, max_time, MemLog)
-% (a) If you want to solve CC on a random graph
+% Usage: CorClus(InputType, InputData, e1, max_time, MemLog)
+% (a) If you want to generate cluster on a random graph
 % CorClus('R', [V,degree], e1, max_time, MemLog)
 % where V number of nodes and average degree of each node equal to 'degree'
+% Example: CorClus('R',[100,4],0.05,3600,0);
 % 
-% (b) If you want to solve CC on the input graph
+% (b) If you want to generate clusters on your input graph
 % CorClus('S',filename, e1, max_time, MemLog)
 % where filename is the '.mat' that consists of graph information in the format
 % given in Step 1.
+% Example: filename = 'L-G1.mat';
+% CorClus('S',filename,0.05,3600,0);
 % 
-% Set e1 = epsilon, the relative error to generate the solution to SDP.
+% Set e1 = epsilon, the relative error to generate the solution to SDP (for more
+% information about the parameter, please refer to Section 4 in the paper)
 % Optionally, set
 % (i) MemLog = 1 if you want to track memory usage
 % (ii) max_time = max time to run the algorithm (in seconds)
+% 
 % The output is stored in the 'output_CC' directory
+
 
 
 %% Set seed value
